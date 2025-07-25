@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="512" cy="512" r="512" fill="#007AFF"/>
+  
+  <!-- Chart Lines -->
+  <path d="M256 768L384 640L512 704L640 448L768 576" 
+        stroke="white" 
+        stroke-width="48" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- Probability Dots -->
+  <circle cx="384" cy="640" r="24" fill="white"/>
+  <circle cx="512" cy="704" r="24" fill="white"/>
+  <circle cx="640" cy="448" r="24" fill="white"/>
+  
+  <!-- Yes/No Indicators -->
+  <path d="M256 320L384 192L512 320" 
+        stroke="#4CAF50" 
+        stroke-width="48" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  <path d="M768 320L640 192L512 320" 
+        stroke="#FF5722" 
+        stroke-width="48" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+</svg> 

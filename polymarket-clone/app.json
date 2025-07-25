@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "PolyMarket Clone",
+    "slug": "polymarket-clone",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#007AFF"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "polymarket-clone",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
