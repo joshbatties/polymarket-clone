@@ -1,0 +1,197 @@
+ Aussie Markets API running on port 3001
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT "public"."markets"."id", "public"."markets"."slug", "public"."markets"."title", "public"."markets"."description", "public"."markets"."image_url", "public"."markets"."category", "public"."markets"."outcome_type"::text, "public"."markets"."status"::text, "public"."markets"."min_trade_cents", "public"."markets"."max_trade_cents", "public"."markets"."total_volume_cents", "public"."markets"."liquidity_pool_cents", "public"."markets"."open_at", "public"."markets"."close_at", "public"."markets"."resolve_at", "public"."markets"."resolved_at", "public"."markets"."resolution_outcome", "public"."markets"."resolution_notes", "public"."markets"."resolution_source_url", "public"."markets"."creator_id", "public"."markets"."created_at", "public"."markets"."updated_at", COALESCE("aggr_selection_0_Trade"."_aggr_count_trades", 0) AS "_aggr_count_trades", COALESCE("aggr_selection_1_Position"."_aggr_count_positions", 0) AS "_aggr_count_positions" FROM "public"."markets" LEFT JOIN (SELECT "public"."trades"."market_id", COUNT(*) AS "_aggr_count_trades" FROM "public"."trades" WHERE 1=1 GROUP BY "public"."trades"."market_id") AS "aggr_selection_0_Trade" ON ("public"."markets"."id" = "aggr_selection_0_Trade"."market_id") LEFT JOIN (SELECT "public"."positions"."market_id", COUNT(*) AS "_aggr_count_positions" FROM "public"."positions" WHERE 1=1 GROUP BY "public"."positions"."market_id") AS "aggr_selection_1_Position" ON ("public"."markets"."id" = "aggr_selection_1_Position"."market_id") WHERE "public"."markets"."status" = CAST($1::text AS "public"."MarketStatus") ORDER BY "public"."markets"."status" ASC, "public"."markets"."created_at" DESC LIMIT $2 OFFSET $3
+[Nest] 23768  - 20/08/2025, 4:51:44 pm     LOG [MarketsController] Listed 0 markets with filters: status=OPEN, category=undefined, search=undefined
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query INSERT INTO "public"."users" ("id","email","password_hash","role","email_verified","mfa_enabled","first_name","last_name","is_active","rg_status","location_permission_granted","created_at","updated_at") VALUES ($1,$2,$3,CAST($4::text AS "public"."UserRole"),$5,$6,$7,$8,$9,CAST($10::text AS "public"."ResponsibleGamblingStatus"),$11,$12,$13) RETURNING "public"."users"."id", "public"."users"."email", "public"."users"."password_hash", "public"."users"."role"::text, "public"."users"."email_verified", "public"."users"."email_verified_at", "public"."users"."mfa_enabled", "public"."users"."mfa_secret", "public"."users"."first_name", "public"."users"."last_name", "public"."users"."phone_number", "public"."users"."is_active", "public"."users"."last_login_at", "public"."users"."last_login_ip", "public"."users"."rg_status"::text, "public"."users"."daily_deposit_limit_cents", "public"."users"."weekly_deposit_limit_cents", "public"."users"."self_excluded_at", "public"."users"."self_exclusion_end_at", "public"."users"."cooling_off_end_at", "public"."users"."ip_country_code", "public"."users"."last_location_lat", "public"."users"."last_location_lon", "public"."users"."location_permission_granted", "public"."users"."created_at", "public"."users"."updated_at"
+[Nest] 23768  - 20/08/2025, 4:52:30 pm     LOG [MailService] 📧 EMAIL VERIFICATION (DEV MODE)
+[Nest] 23768  - 20/08/2025, 4:52:30 pm     LOG [MailService] ================================
+[Nest] 23768  - 20/08/2025, 4:52:30 pm     LOG [MailService] To: joshbatties1503@gmail.com
+[Nest] 23768  - 20/08/2025, 4:52:30 pm     LOG [MailService] Subject: Verify your Aussie Markets account
+[Nest] 23768  - 20/08/2025, 4:52:30 pm     LOG [MailService]
+Click the link below to verify your email address:
+[Nest] 23768  - 20/08/2025, 4:52:30 pm     LOG [MailService] aussie-markets://verify-email?token=eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJjbWVqbTgzcHIwMDAwMncwOXQwdDl1eHpsIiwiZW1haWwiOiJqb3NoYmF0dGllczE1MDNAZ21haWwuY29tIiwicHVycG9zZSI6ImVtYWlsX3ZlcmlmaWNhdGlvbiIsImlhdCI6MTc1NTY3Mjc1MCwiZXhwIjoxNzU1NzU5MTUwLCJpc3MiOiJhdXNzaWUtbWFya2V0cy1hcGkiLCJhdWQiOiJhdXNzaWUtbWFya2V0cy1tb2JpbGUifQ.g8dc7NyyxOB6vgptgGn_qRL5O096wXI2JL4R2MsZw_U
+[Nest] 23768  - 20/08/2025, 4:52:30 pm     LOG [MailService]
+This link expires in 24 hours.
+[Nest] 23768  - 20/08/2025, 4:52:30 pm     LOG [MailService] ================================
+[Nest] 23768  - 20/08/2025, 4:52:30 pm     LOG [AuthService] User registered: joshbatties1503@gmail.com
+[Nest] 23768  - 20/08/2025, 4:52:30 pm     LOG [AuthController] Registration attempt from IP: ::ffff:192.168.110.81
+prisma:query SELECT 1
+prisma:query SELECT "public"."markets"."id", "public"."markets"."slug", "public"."markets"."title", "public"."markets"."description", "public"."markets"."image_url", "public"."markets"."category", "public"."markets"."outcome_type"::text, "public"."markets"."status"::text, "public"."markets"."min_trade_cents", "public"."markets"."max_trade_cents", "public"."markets"."total_volume_cents", "public"."markets"."liquidity_pool_cents", "public"."markets"."open_at", "public"."markets"."close_at", "public"."markets"."resolve_at", "public"."markets"."resolved_at", "public"."markets"."resolution_outcome", "public"."markets"."resolution_notes", "public"."markets"."resolution_source_url", "public"."markets"."creator_id", "public"."markets"."created_at", "public"."markets"."updated_at", COALESCE("aggr_selection_0_Trade"."_aggr_count_trades", 0) AS "_aggr_count_trades", COALESCE("aggr_selection_1_Position"."_aggr_count_positions", 0) AS "_aggr_count_positions" FROM "public"."markets" LEFT JOIN (SELECT "public"."trades"."market_id", COUNT(*) AS "_aggr_count_trades" FROM "public"."trades" WHERE 1=1 GROUP BY "public"."trades"."market_id") AS "aggr_selection_0_Trade" ON ("public"."markets"."id" = "aggr_selection_0_Trade"."market_id") LEFT JOIN (SELECT "public"."positions"."market_id", COUNT(*) AS "_aggr_count_positions" FROM "public"."positions" WHERE 1=1 GROUP BY "public"."positions"."market_id") AS "aggr_selection_1_Position" ON ("public"."markets"."id" = "aggr_selection_1_Position"."market_id") WHERE "public"."markets"."status" = CAST($1::text AS "public"."MarketStatus") ORDER BY "public"."markets"."status" ASC, "public"."markets"."created_at" DESC LIMIT $2 OFFSET $3
+[Nest] 23768  - 20/08/2025, 4:52:45 pm     LOG [MarketsController] Listed 0 markets with filters: status=OPEN, category=undefined, search=undefined     
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."idempotency_keys"."key" FROM "public"."idempotency_keys" WHERE "public"."idempotency_keys"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT SUM("amount_cents") FROM (SELECT "public"."ledger_entries"."amount_cents" FROM "public"."ledger_entries" WHERE 1=1 OFFSET $1) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."withdrawals"."id" FROM "public"."withdrawals" WHERE "public"."withdrawals"."status" = CAST($1::text AS "public"."WithdrawalStatus") OFFSET $2) AS "sub"
+prisma:query SELECT COUNT(*) FROM (SELECT "public"."aml_events"."id" FROM "public"."aml_events" WHERE "public"."aml_events"."created_at" >= $1 OFFSET $2) AS "sub"
+prisma:query SELECT 1
+prisma:query SELECT "public"."markets"."id", "public"."markets"."slug", "public"."markets"."title", "public"."markets"."description", "public"."markets"."image_url", "public"."markets"."category", "public"."markets"."outcome_type"::text, "public"."markets"."status"::text, "public"."markets"."min_trade_cents", "public"."markets"."max_trade_cents", "public"."markets"."total_volume_cents", "public"."markets"."liquidity_pool_cents", "public"."markets"."open_at", "public"."markets"."close_at", "public"."markets"."resolve_at", "public"."markets"."resolved_at", "public"."markets"."resolution_outcome", "public"."markets"."resolution_notes", "public"."markets"."resolution_source_url", "public"."markets"."creator_id", "public"."markets"."created_at", "public"."markets"."updated_at", COALESCE("aggr_selection_0_Trade"."_aggr_count_trades", 0) AS "_aggr_count_trades", COALESCE("aggr_selection_1_Position"."_aggr_count_positions", 0) AS "_aggr_count_positions" FROM "public"."markets" LEFT JOIN (SELECT "public"."trades"."market_id", COUNT(*) AS "_aggr_count_trades" FROM "public"."trades" WHERE 1=1 GROUP BY "public"."trades"."market_id") AS "aggr_selection_0_Trade" ON ("public"."markets"."id" = "aggr_selection_0_Trade"."market_id") LEFT JOIN (SELECT "public"."positions"."market_id", COUNT(*) AS "_aggr_count_positions" FROM "public"."positions" WHERE 1=1 GROUP BY "public"."positions"."market_id") AS "aggr_selection_1_Position" ON ("public"."markets"."id" = "aggr_selection_1_Position"."market_id") WHERE "public"."markets"."status" = CAST($1::text AS "public"."MarketStatus") ORDER BY "public"."markets"."status" ASC, "public"."markets"."created_at" DESC LIMIT $2 OFFSET $3
+[Nest] 23768  - 20/08/2025, 4:53:45 pm     LOG [MarketsController] Listed 0 markets with filters: status=OPEN, category=undefined, search=undefined

@@ -1,0 +1,8 @@
+---
+alwaysApply: true
+---
+You can refer to the specifications for this app at docs/spec.txt.
+You can refer to the documentation for this app at docs/*.
+WHen making changes, you should always keep the documentation up-to date.
+You should never leave dead code behind.
+This app is still in development, therefore we should never maintain backwards compatability when making changes. 

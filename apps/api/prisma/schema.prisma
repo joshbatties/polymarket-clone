@@ -1,0 +1,598 @@
+// Aussie Markets Database Schema
+// This schema defines the complete data model for the prediction market platform
+
+// Generator configuration for Prisma Client
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Database configuration
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum KycStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  UNDER_REVIEW
+}
+
+enum AccountStatus {
+  ACTIVE
+  FROZEN
+  CLOSED
+}
+
+enum LedgerEntryType {
+  DEPOSIT
+  WITHDRAWAL
+  TRADE
+  FEE
+  SETTLEMENT
+  REFUND
+  BONUS
+  PENALTY
+}
+
+enum MarketStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  RESOLVED
+  CANCELLED
+}
+
+enum MarketOutcomeType {
+  BINARY
+  CATEGORICAL
+  SCALAR
+}
+
+enum TradeType {
+  BUY
+  SELL
+}
+
+enum TradeSide {
+  BUY
+  SELL
+}
+
+enum Outcome {
+  YES
+  NO
+}
+
+enum WithdrawalStatus {
+  REQUESTED
+  PENDING_REVIEW
+  APPROVED
+  PROCESSING
+  COMPLETED
+  REJECTED
+  CANCELLED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  APPROVE
+  REJECT
+  RESOLVE
+  CANCEL
+}
+
+enum BankAccountStatus {
+  PENDING_VERIFICATION
+  VERIFIED
+  SUSPENDED
+  CLOSED
+}
+
+enum ReconciliationStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum ResponsibleGamblingStatus {
+  ACTIVE
+  SELF_EXCLUDED
+  COOLING_OFF
+}
+
+enum AmlEventType {
+  LARGE_DEPOSIT
+  RAPID_DEPOSITS
+  UNUSUAL_PNL
+  SANCTIONS_CHECK
+  PEP_CHECK
+  WITHDRAWAL_REVIEW
+  MANUAL_REVIEW
+}
+
+enum AmlEventStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ESCALATED
+}
+
+enum GeographicRestriction {
+  ALLOWED
+  RESTRICTED
+  BLOCKED
+}
+
+// Core User Management
+model User {
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  passwordHash        String    @map("password_hash")
+  role                UserRole  @default(USER)
+  emailVerified       Boolean   @default(false) @map("email_verified")
+  emailVerifiedAt     DateTime? @map("email_verified_at")
+  mfaEnabled          Boolean   @default(false) @map("mfa_enabled")
+  mfaSecret           String?   @map("mfa_secret")
+  firstName           String?   @map("first_name") @db.VarChar(50)
+  lastName            String?   @map("last_name") @db.VarChar(50)
+  phoneNumber         String?   @map("phone_number") @db.VarChar(20)
+  isActive            Boolean   @default(true) @map("is_active")
+  lastLoginAt         DateTime? @map("last_login_at")
+  lastLoginIp         String?   @map("last_login_ip") @db.VarChar(45)
+  
+  // Responsible gambling controls
+  rgStatus            ResponsibleGamblingStatus @default(ACTIVE) @map("rg_status")
+  dailyDepositLimitCents BigInt? @map("daily_deposit_limit_cents")
+  weeklyDepositLimitCents BigInt? @map("weekly_deposit_limit_cents")
+  selfExcludedAt      DateTime? @map("self_excluded_at")
+  selfExclusionEndAt  DateTime? @map("self_exclusion_end_at")
+  coolingOffEndAt     DateTime? @map("cooling_off_end_at")
+  
+  // Geographic and compliance
+  ipCountryCode       String?   @map("ip_country_code") @db.VarChar(2)
+  lastLocationLat     Float?    @map("last_location_lat")
+  lastLocationLon     Float?    @map("last_location_lon")
+  locationPermissionGranted Boolean @default(false) @map("location_permission_granted")
+  
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  
+  // Relationships
+  kycProfile              KycProfile?
+  walletAccounts          WalletAccount[]
+  bankAccounts            BankAccount[]
+  ledgerEntries           LedgerEntry[]
+  trades                  Trade[]
+  positions               Position[]
+  withdrawals             Withdrawal[]
+  refreshTokens           RefreshToken[]
+  auditLogs               AdminAuditLog[]
+  createdMarkets          Market[]                @relation("CreatedMarkets")
+  reviewedWithdrawals     Withdrawal[]            @relation("ReviewedWithdrawals")
+  processedReconciliations ReconciliationReport[] @relation("ProcessedReconciliations")
+  amlEvents               AmlEvent[]
+
+  @@map("users")
+  @@index([email])
+  @@index([isActive])
+  @@index([role])
+}
+
+// Refresh tokens for authentication
+model RefreshToken {
+  id              String    @id @default(cuid())
+  tokenHash       String    @map("token_hash")
+  userId          String    @map("user_id")
+  expiresAt       DateTime  @map("expires_at")
+  revokedAt       DateTime? @map("revoked_at")
+  revokedByIp     String?   @map("revoked_by_ip") @db.VarChar(45)
+  replacedByToken String?   @map("replaced_by_token")
+  createdByIp     String    @map("created_by_ip") @db.VarChar(45)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([revokedAt])
+}
+
+// KYC (Know Your Customer) profile data
+model KycProfile {
+  id              String    @id @default(cuid())
+  userId          String    @unique @map("user_id")
+  status          KycStatus @default(PENDING)
+  fullName        String    @map("full_name") @db.VarChar(100)
+  dateOfBirth     DateTime  @map("date_of_birth") @db.Date
+  address         String    @db.Text
+  city            String    @db.VarChar(50)
+  state           String    @db.VarChar(50)
+  postcode        String    @db.VarChar(10)
+  country         String    @db.VarChar(2) // ISO country code
+  documentType    String?   @map("document_type") @db.VarChar(20)
+  documentNumber  String?   @map("document_number") @db.VarChar(50)
+  documentUrl     String?   @map("document_url")
+  selfieUrl       String?   @map("selfie_url")
+  providerRef     String?   @map("provider_ref") // Reference to external KYC provider
+  providerType    String?   @map("provider_type") @db.VarChar(20) // MOCK, ONFIDO, SUMSUB
+  
+  // Age verification
+  isAgeVerified   Boolean   @default(false) @map("is_age_verified")
+  ageAtSubmission Int?      @map("age_at_submission")
+  
+  // Geographic verification
+  citizenshipCountry String? @map("citizenship_country") @db.VarChar(2)
+  residencyCountry   String? @map("residency_country") @db.VarChar(2)
+  geoRestriction     GeographicRestriction @default(ALLOWED) @map("geo_restriction")
+  
+  // AML/Sanctions checks
+  sanctionsChecked   Boolean   @default(false) @map("sanctions_checked")
+  sanctionsMatch     Boolean   @default(false) @map("sanctions_match")
+  pepChecked         Boolean   @default(false) @map("pep_checked")
+  pepMatch           Boolean   @default(false) @map("pep_match")
+  amlRiskScore       Int?      @map("aml_risk_score") // 0-100
+  
+  // Manual review
+  reviewNotes     String?   @map("review_notes") @db.Text
+  reviewedBy      String?   @map("reviewed_by")
+  
+  // Timestamps
+  approvedAt      DateTime? @map("approved_at")
+  rejectedAt      DateTime? @map("rejected_at")
+  submittedAt     DateTime? @map("submitted_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("kyc_profiles")
+  @@index([status])
+  @@index([submittedAt])
+}
+
+// Wallet accounts for users and system accounts
+model WalletAccount {
+  id              String        @id @default(cuid())
+  userId          String?       @map("user_id") // Null for system accounts
+  accountType     String        @map("account_type") @db.VarChar(50) // user_cash, custody_cash, fee_revenue, etc.
+  currency        String        @default("AUD") @db.VarChar(3)
+  status          AccountStatus @default(ACTIVE)
+  availableCents  BigInt        @default(0) @map("available_cents") // Available balance in cents
+  pendingCents    BigInt        @default(0) @map("pending_cents")   // Pending transactions
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  
+  // Relationships
+  user                    User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ledgerEntries           LedgerEntry[]
+  counterLedgerEntries    LedgerEntry[] @relation("CounterPartyAccount")
+
+  @@map("wallet_accounts")
+  @@unique([userId, accountType, currency])
+  @@index([userId])
+  @@index([accountType])
+  @@index([status])
+}
+
+// Double-entry ledger for all financial transactions
+model LedgerEntry {
+  id                  String           @id @default(cuid())
+  transactionId       String           @map("transaction_id") // Groups related entries
+  accountId           String           @map("account_id")
+  counterAccountId    String           @map("counter_account_id")
+  userId              String?          @map("user_id") // For user-related entries
+  amountCents         BigInt           @map("amount_cents") // Signed amount in cents
+  currency            String           @default("AUD") @db.VarChar(3)
+  entryType           LedgerEntryType  @map("entry_type")
+  description         String           @db.Text
+  metadata            Json?            // Additional context (trade details, external refs, etc.)
+  timestamp           DateTime         @default(now())
+  
+  // Relationships
+  account             WalletAccount    @relation(fields: [accountId], references: [id])
+  counterAccount      WalletAccount    @relation("CounterPartyAccount", fields: [counterAccountId], references: [id])
+  user                User?            @relation(fields: [userId], references: [id])
+
+  @@map("ledger_entries")
+  @@index([transactionId])
+  @@index([accountId])
+  @@index([userId])
+  @@index([timestamp])
+  @@index([entryType])
+}
+
+// Idempotency key table to prevent duplicate transactions
+model IdempotencyKey {
+  key         String   @id @db.VarChar(255)
+  scope       String   @db.VarChar(100) // e.g., 'ledger', 'payment', 'trade'
+  response    Json?    // Cached response for duplicate requests
+  createdAt   DateTime @default(now()) @map("created_at")
+  expiresAt   DateTime @map("expires_at")
+
+  @@map("idempotency_keys")
+  @@index([scope])
+  @@index([expiresAt])
+}
+
+// Prediction markets
+model Market {
+  id                  String            @id @default(cuid())
+  slug                String            @unique @db.VarChar(100)
+  title               String            @db.VarChar(200)
+  description         String            @db.Text
+  imageUrl            String?           @map("image_url")
+  category            String            @db.VarChar(50)
+  outcomeType         MarketOutcomeType @default(BINARY) @map("outcome_type")
+  status              MarketStatus      @default(DRAFT)
+  minTradeCents       BigInt            @default(100) @map("min_trade_cents") // Minimum trade size
+  maxTradeCents       BigInt?           @map("max_trade_cents") // Maximum trade size
+  totalVolumeCents    BigInt            @default(0) @map("total_volume_cents")
+  liquidityPoolCents  BigInt            @default(0) @map("liquidity_pool_cents")
+  openAt              DateTime?         @map("open_at")
+  closeAt             DateTime?         @map("close_at")
+  resolveAt           DateTime?         @map("resolve_at")
+  resolvedAt          DateTime?         @map("resolved_at")
+  resolutionOutcome   String?           @map("resolution_outcome") // YES, NO, or other
+  resolutionNotes     String?           @map("resolution_notes") @db.Text
+  resolutionSourceUrl String?           @map("resolution_source_url")
+  creatorId           String            @map("creator_id")
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+  
+  // Relationships
+  creator     User       @relation("CreatedMarkets", fields: [creatorId], references: [id])
+  lmsrState   LmsrState?
+  trades      Trade[]
+  positions   Position[]
+
+  @@map("markets")
+  @@index([slug])
+  @@index([status])
+  @@index([category])
+  @@index([closeAt])
+  @@index([openAt])
+}
+
+// LMSR (Logarithmic Market Scoring Rule) state for automated market making
+model LmsrState {
+  id                String  @id @default(cuid())
+  marketId          String  @unique @map("market_id")
+  liquidityParam    Decimal @map("liquidity_param") @db.Decimal(30, 18) // b parameter
+  quantityYes       Decimal @map("quantity_yes") @db.Decimal(30, 18)    // q_yes
+  quantityNo        Decimal @map("quantity_no") @db.Decimal(30, 18)     // q_no
+  lastPriceYes      Decimal @map("last_price_yes") @db.Decimal(10, 8)   // Last calculated price
+  lastPriceNo       Decimal @map("last_price_no") @db.Decimal(10, 8)
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  
+  // Relationships
+  market Market @relation(fields: [marketId], references: [id], onDelete: Cascade)
+
+  @@map("lmsr_state")
+  @@index([marketId])
+}
+
+// Individual trades
+model Trade {
+  id              String    @id @default(cuid())
+  marketId        String    @map("market_id")
+  userId          String    @map("user_id")
+  transactionId   String    @map("transaction_id") // Links to ledger entries
+  tradeType       TradeType @map("trade_type")
+  side            TradeSide
+  outcome         Outcome
+  shares          Decimal   @db.Decimal(30, 18)
+  costCents       BigInt    @map("cost_cents")
+  feeCents        BigInt    @default(0) @map("fee_cents")
+  price           Decimal   @db.Decimal(10, 8) // Price per share (0-1)
+  timestamp       DateTime  @default(now())
+  
+  // Relationships
+  market Market @relation(fields: [marketId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("trades")
+  @@index([marketId])
+  @@index([userId])
+  @@index([timestamp])
+  @@index([transactionId])
+}
+
+// User positions in markets
+model Position {
+  id              String  @id @default(cuid())
+  userId          String  @map("user_id")
+  marketId        String  @map("market_id")
+  yesShares       Decimal @default(0) @map("yes_shares") @db.Decimal(30, 18)
+  noShares        Decimal @default(0) @map("no_shares") @db.Decimal(30, 18)
+  avgPriceYes     Decimal @default(0) @map("avg_price_yes") @db.Decimal(10, 8)
+  avgPriceNo      Decimal @default(0) @map("avg_price_no") @db.Decimal(10, 8)
+  totalInvested   BigInt  @default(0) @map("total_invested_cents")
+  realizedPnl     BigInt  @default(0) @map("realized_pnl_cents")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  // Relationships
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  market Market @relation(fields: [marketId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, marketId])
+  @@map("positions")
+  @@index([userId])
+  @@index([marketId])
+}
+
+// Bank account linking for withdrawals
+model BankAccount {
+  id                String            @id @default(cuid())
+  userId            String            @map("user_id")
+  bankName          String            @map("bank_name") @db.VarChar(100)
+  accountName       String            @map("account_name") @db.VarChar(100)
+  bsb               String            @db.VarChar(6)
+  maskedAccountNumber String          @map("masked_account_number") @db.VarChar(20) // e.g., "****1234"
+  accountNumberHash String            @map("account_number_hash") // Hashed full account number for verification
+  status            BankAccountStatus @default(PENDING_VERIFICATION)
+  isPrimary         Boolean           @default(false) @map("is_primary")
+  verifiedAt        DateTime?         @map("verified_at")
+  lastUsedAt        DateTime?         @map("last_used_at")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+  
+  // Relationships
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  withdrawals Withdrawal[]
+
+  @@map("bank_accounts")
+  @@index([userId])
+  @@index([status])
+  @@unique([userId, bsb, accountNumberHash]) // Prevent duplicate accounts
+}
+
+// Withdrawal requests
+model Withdrawal {
+  id                String           @id @default(cuid())
+  userId            String           @map("user_id")
+  bankAccountId     String?          @map("bank_account_id") // Reference to linked bank account
+  amountCents       BigInt           @map("amount_cents")
+  feeCents          BigInt           @default(0) @map("fee_cents")
+  currency          String           @default("AUD") @db.VarChar(3)
+  status            WithdrawalStatus @default(REQUESTED)
+  paymentRef        String?          @map("payment_ref") // External payment reference
+  transactionId     String?          @map("transaction_id") // Links to ledger
+  reviewNotes       String?          @map("review_notes") @db.Text
+  processedAt       DateTime?        @map("processed_at")
+  reviewedBy        String?          @map("reviewed_by")
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+  
+  // Relationships
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bankAccount BankAccount? @relation(fields: [bankAccountId], references: [id])
+  reviewer    User?        @relation("ReviewedWithdrawals", fields: [reviewedBy], references: [id])
+
+  @@map("withdrawals")
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Daily reconciliation reports
+model ReconciliationReport {
+  id                    String                @id @default(cuid())
+  reportDate            DateTime              @map("report_date") @db.Date
+  status                ReconciliationStatus  @default(PENDING)
+  
+  // Stripe data
+  stripeDepositsTotal   BigInt                @map("stripe_deposits_total")
+  stripeWithdrawalsTotal BigInt               @map("stripe_withdrawals_total")
+  stripeFeesTotal       BigInt                @map("stripe_fees_total")
+  stripeBalanceEnd      BigInt                @map("stripe_balance_end")
+  
+  // Internal ledger data
+  ledgerDepositsTotal   BigInt                @map("ledger_deposits_total")
+  ledgerWithdrawalsTotal BigInt               @map("ledger_withdrawals_total")
+  ledgerFeesTotal       BigInt                @map("ledger_fees_total")
+  ledgerBalanceEnd      BigInt                @map("ledger_balance_end")
+  
+  // Differences
+  depositsDifference    BigInt                @map("deposits_difference")
+  withdrawalsDifference BigInt                @map("withdrawals_difference")
+  feesDifference        BigInt                @map("fees_difference")
+  balanceDifference     BigInt                @map("balance_difference")
+  
+  // Metadata
+  discrepancyCount      Int                   @default(0) @map("discrepancy_count")
+  notes                 String?               @db.Text
+  processedBy           String?               @map("processed_by")
+  processedAt           DateTime?             @map("processed_at")
+  createdAt             DateTime              @default(now()) @map("created_at")
+  updatedAt             DateTime              @updatedAt @map("updated_at")
+  
+  // Relationships
+  processor User? @relation("ProcessedReconciliations", fields: [processedBy], references: [id])
+
+  @@map("reconciliation_reports")
+  @@unique([reportDate])
+  @@index([status])
+  @@index([reportDate])
+}
+
+// Admin audit log for compliance and monitoring
+model AdminAuditLog {
+  id          String      @id @default(cuid())
+  userId      String      @map("user_id")
+  action      AuditAction
+  resource    String      @db.VarChar(50) // e.g., 'market', 'user', 'withdrawal'
+  resourceId  String?     @map("resource_id")
+  oldValues   Json?       @map("old_values")
+  newValues   Json?       @map("new_values")
+  ipAddress   String      @map("ip_address") @db.VarChar(45)
+  userAgent   String?     @map("user_agent") @db.Text
+  timestamp   DateTime    @default(now())
+  
+  // Relationships
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("admin_audit_log")
+  @@index([userId])
+  @@index([action])
+  @@index([resource])
+  @@index([timestamp])
+}
+
+// AML/Anti-fraud event logging
+model AmlEvent {
+  id              String         @id @default(cuid())
+  userId          String?        @map("user_id") // Null for system-level events
+  eventType       AmlEventType   @map("event_type")
+  status          AmlEventStatus @default(PENDING)
+  
+  // Event details
+  description     String         @db.Text
+  riskScore       Int?           @map("risk_score") // 0-100
+  amountCents     BigInt?        @map("amount_cents") // For transaction-related events
+  metadata        Json?          // Additional context (IPs, patterns, etc.)
+  
+  // Related entities
+  transactionId   String?        @map("transaction_id")
+  marketId        String?        @map("market_id")
+  tradeId         String?        @map("trade_id")
+  withdrawalId    String?        @map("withdrawal_id")
+  
+  // Manual review
+  reviewNotes     String?        @map("review_notes") @db.Text
+  reviewedBy      String?        @map("reviewed_by")
+  reviewedAt      DateTime?      @map("reviewed_at")
+  
+  // Auto-resolution
+  autoApproved    Boolean        @default(false) @map("auto_approved")
+  autoReason      String?        @map("auto_reason") @db.VarChar(100)
+  
+  // Timestamps
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  
+  // Relationships
+  user            User?          @relation(fields: [userId], references: [id])
+
+  @@map("aml_events")
+  @@index([userId])
+  @@index([eventType])
+  @@index([status])
+  @@index([riskScore])
+  @@index([createdAt])
+  @@index([transactionId])
+}

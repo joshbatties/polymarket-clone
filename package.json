@@ -1,0 +1,38 @@
+{
+  "name": "aussie-markets",
+  "version": "1.0.0",
+  "description": "PolyMarket competitor for Australian dollar prediction markets",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "build": "pnpm --recursive run build",
+    "test": "pnpm --recursive run test",
+    "lint": "pnpm --recursive run lint",
+    "typecheck": "pnpm --recursive run typecheck",
+    "dev": "pnpm --recursive --parallel run dev",
+    "clean": "pnpm --recursive run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.5",
+    "typescript": "^5.8.3"
+  },
+  "keywords": [
+    "prediction-markets",
+    "trading",
+    "australian-dollars",
+    "react-native",
+    "nestjs"
+  ],
+  "author": "JPC Group",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@nestjs/throttler": "^6.4.0",
+    "@types/ioredis": "^4.28.10",
+    "ioredis": "^5.7.0"
+  }
+}

@@ -1,0 +1,387 @@
+Target platforms: iOS (primary), Android (secondary later).
+Stack: Expo (React Native) + TypeScript, Stripe (Apple Pay), Node.js (NestJS) + PostgreSQL.
+Currency: AUD (no crypto).
+Security: OWASP MASVS baseline, PCI & Apple requirements first-class.
+
+1) Core User Stories (MVP scope)
+
+Onboarding & KYC
+
+As a user, I can create an account with email + password, verify email, and enable 2FA (TOTP or SMS).
+
+As a user, I must pass identity verification (AU 18+, name, DOB, residential address; document verification) before I can deposit/withdraw.
+
+As a user, I can self-exclude and set deposit/time limits.
+
+Wallet & Payments (AUD)
+
+As a user, I can top-up with Apple Pay (Visa/Mastercard/Amex) in AUD; funds appear in my in-app wallet after authorization/capture.
+
+As a user, I can see a full wallet ledger (credits, trades, fees, withdrawals).
+
+As a user, I can request a withdrawal to bank (BSB/Account via payout provider; manual review allowed).
+
+Markets & Trading
+
+As a user, I can browse binary markets (Yes/No), view price, volume, liquidity, and close time.
+
+As a user, I can buy or sell shares against an automated market maker (no order book).
+
+As a user, I can see my open positions, P&L, and settlement outcomes.
+
+Resolution & Payouts (Admin)
+
+Admin can create/close markets, seed liquidity, set resolution criteria/sources, resolve outcomes, and trigger automatic payouts.
+
+2) Product Constraints & Policies
+
+Jurisdiction & age: Users must be physically located in Australia (geofencing + IP checks + OS locale hints) and age-verified 18+. Provide responsible gambling tooling (self-exclusion, cool-offs, deposit caps). (AU licensing/AML obligations apply—see §12.) 
+austrac.gov.au
+ACMA
+
+App Store: Real-money wagering requires strict adherence to Apple’s Guideline 5.3 and related rules; app must be free, licensed where offered, age-gated, and comply with local law. Use Apple Pay (not IAP) for gambling deposits. 
+Apple Developer
+
+Payments: Use Stripe React Native SDK for Apple Pay + PaymentIntent flows. We never store PAN or sensitive auth data; keep PCI scope minimal. 
+Stripe Docs
+Expo Documentation
+
+3) High-Level Architecture
+
+Mobile (Expo + TS)
+
+UI: Expo Router, React Query/SWR, Zustand or Redux Toolkit for minimal global state.
+
+Secure storage: device Keychain/Keystore via expo-secure-store for tokens/session keys.
+
+Network: fetch with retries, exponential backoff, TLS pinning (release builds).
+
+Payments: @stripe/stripe-react-native Apple Pay sheet + PaymentSheet.
+
+Backend (API)
+
+Node.js (NestJS + TypeScript), JWT (short-lived) + refresh token (rotating), OAuth 2.1 PKCE readiness.
+
+PostgreSQL 15+ (AWS RDS ap-southeast-2), Redis (rate-limiting, sessions, idempotency cache), BullMQ for jobs.
+
+Ledger service (internal) with double-entry accounting (immutable).
+
+Market maker service (LMSR engine).
+
+Provider SDKs: Stripe (payments/payouts), KYC provider (Onfido/Sumsub-like), GeoIP.
+
+Infra / DevOps
+
+AWS (ap-southeast-2): ALB → API (ECS or Fly.io alternative) → RDS/Redis; CloudFront for assets.
+
+CI/CD: GitHub Actions, EAS Build/Submit; SAST/DAST; dependency scanning; SBOM.
+
+Observability: OpenTelemetry traces, JSON logs (PII-redacted), metrics (Prometheus), alerts (PagerDuty).
+
+4) Data Model (initial)
+
+Users
+id, email, email_verified_at, password_hash, mfa_enabled, created_at
+
+KYCProfiles
+user_id, status{pending, approved, rejected}, full_name, dob, address, provider_ref, updated_at
+
+WalletAccounts
+id, user_id, status{active,frozen}, available_cents, pending_cents
+
+LedgerEntries (double-entry)
+id, ts, tx_id, account_id, counter_account_id, amount_cents (signed), currency='AUD', type{deposit,trade,fee,withdrawal,settlement}, metadata(jsonb)
+
+Constraint: sum by tx_id = 0 (atomic). Idempotency key enforces once-only booking.
+
+Markets
+id, slug, title, description_md, outcome_type='binary', status{open,closed,resolved}, close_at, resolve_at, resolver_notes, resolution_source_url
+
+LMSRState
+market_id, b (liquidity parameter, decimal), q_yes (decimal), q_no (decimal)
+
+Trades
+id, market_id, user_id, side{buy,sell}, outcome{YES,NO}, shares(decimal), cost_cents, fee_cents, price, created_at
+
+Positions
+user_id, market_id, yes_shares(decimal), no_shares(decimal), avg_price
+
+Payouts / Withdrawals
+id, user_id, amount_cents, status{requested,review,paid,failed}, destination_ref, created_at
+
+Precision: use numeric(30,18) for LMSR math, ledger in cents int8.
+
+5) Market Maker (LMSR) — MVP math
+
+Use Logarithmic Market Scoring Rule (LMSR) to avoid order books and guarantee continuous liquidity.
+
+Cost function: C(q) = b * ln( exp(q_yes / b) + exp(q_no / b) )
+
+Price of YES: p_yes = exp(q_yes / b) / (exp(q_yes / b) + exp(q_no / b))
+
+A buy of Δ shares in YES costs: C(q_yes+Δ, q_no) − C(q_yes, q_no); update q_yes += Δ.
+
+B (liquidity) tuned per market to control price impact and worst-case loss. 
+cultivatelabs.com
+blog.oddhead.com
+gnosis-pm-contracts.readthedocs.io
+
+Engine requirements
+
+Deterministic, pure functions; use decimal library; guardrails for overflow/underflow.
+
+Unit tests with invariants (no arbitrage from rounding, monotonic prices).
+
+Server-authoritative pricing; mobile shows quotes via signed API response.
+
+6) Wallet & Funds Flow
+
+Top-up (Apple Pay via Stripe)
+
+Client requests POST /payments/deposit-intent {amount_cents}.
+
+API creates Stripe PaymentIntent (AUD), enables Apple Pay.
+
+Client presents Apple Pay; on success, client confirms PI; server webhook verifies succeeded, posts ledger:
+
+user_cash ← custody_cash (credit user).
+
+Show confirmed balance.
+Notes: Use Stripe RN SDK + Apple Pay entitlements; App uses Stripe Merchant identifier. Never handle PAN. PCI scope aims for SAQ-A (validate with QSA/Stripe). 
+Stripe Docs
++1
+PCI Security Standards Council
+
+Withdrawals
+
+Post-KYC, allow bank payouts (Stripe payouts/Connect or pay-by-bank provider). Queue “review” for AML red flags before paid. Reconcile daily.
+
+Fees
+
+Trading fee (e.g., 1.0% not in MVP? choose 0.5–1.0%), withdrawal fee optional; all fees recorded as own ledger accounts.
+
+Reconciliation
+
+Daily automated Stripe balance vs. internal ledger reconciliation with break reports.
+
+7) API Surface (selected)
+
+POST /auth/register, POST /auth/login, POST /auth/mfa/enable, POST /auth/refresh, POST /auth/logout
+
+POST /kyc/start, GET /kyc/status
+
+POST /payments/deposit-intent, Stripe webhook /webhooks/stripe
+
+GET /wallet, GET /wallet/ledger?cursor=...
+
+GET /markets?status=open, GET /markets/:id, POST /markets/:id/quote?outcome=yes&shares=...
+
+POST /markets/:id/trades (server validates quote within ±X secs and slippage)
+
+POST /withdrawals, GET /withdrawals
+
+Admin: POST /admin/markets, POST /admin/markets/:id/seed, POST /admin/markets/:id/resolve
+
+All POSTs: idempotency keys (header Idempotency-Key) to avoid double charges/ledger duplication.
+
+8) Mobile App (Expo) Implementation Notes
+
+Expo SDK: Latest stable; EAS Build required (Apple Pay entitlements need a custom build, not Expo Go).
+
+Stripe RN: PaymentSheet + Apple Pay for deposits; present Apple Pay sheet with merchant ID and country AU. Map PI client secret from server. 
+Expo Documentation
+Stripe Docs
+
+Secure storage: access/refresh tokens in Keychain (expo-secure-store), never in AsyncStorage.
+
+TLS pinning: enable in release with RN SSL-pinning library (Expo config plugin).
+
+Content controls: 18+ interstitial, responsible gambling links, clear ToS/Privacy, region lock if outside AU.
+
+Accessibility: Dynamic Type, VoiceOver labels, contrast ≥ WCAG AA, hit targets ≥ 44pt.
+
+9) Security Requirements (MUST)
+
+Standards baseline: Align to OWASP MASVS: architecture, storage, crypto, auth, network, platform, resilience; track in a living checklist. 
+OWASP Mobile Application Security
+GitHub
+
+AuthN/Z
+
+Email+password with Argon2id, 2FA optional→recommended; device binding for refresh tokens.
+
+JWT access (≤15 min), rotating refresh tokens (≤14 days); revoke on device logout.
+
+RBAC roles: user, analyst (read-only metrics), admin.
+
+Crypto
+
+All data in transit TLS1.2+; HSTS at edge.
+
+Sensitive server secrets in AWS KMS + Parameter Store; no secrets in the repo.
+
+PII at rest encrypted (RDS storage encryption + column-level AES-GCM for high-risk fields).
+
+Mobile storage
+
+No PII cached beyond necessity; tokens only in Keychain. Screenshots obfuscation on sensitive screens.
+
+Network hardening
+
+Cert pinning; strict content security policy for any embedded webviews (prefer none).
+
+API rate limits per IP/device/user; WAF on edge; bot/abuse heuristics.
+
+Payments & PCI
+
+Stripe handles card data; app never sees PAN; complete annual PCI SAQ (target SAQ-A with Stripe’s mobile SDKs; confirm with QSA). 
+Stripe Docs
++1
+PCI Security Standards Council
+
+KYC/AML
+
+Before first withdrawal (and before large deposits), collect/verify identity; maintain AML program, PEP/sanctions screening, transaction monitoring, SMR reporting to AUSTRAC. 
+austrac.gov.au
++2
+austrac.gov.au
++2
+
+Logging & privacy
+
+No sensitive data (PAN, full address, documents) in logs.
+
+Audit logs for admin actions and ledger mutations (immutable store).
+
+Data retention: KYC docs per provider guidance & AU record-keeping requirements; configurable TTLs.
+
+Secure SDLC
+
+SAST (CodeQL), dependency audit, secret scanning, supply-chain lockfiles.
+
+Pen-test before launch; mobile tamper checks, jailbreak detection (best effort).
+
+10) Compliance & Licensing (Australia) — Launch Gate
+
+Confirm appropriate licence(s) for real-money wagering/prediction markets (state/territory—e.g., VGCCC in VIC—or NT bookmaker/betting exchange licence) and list the app only where licensed; enforce geofencing. 
+vgccc.vic.gov.au
++1
+
+Maintain an AML/CTF Program (Part A & Part B), designate AMLCO, register/report with AUSTRAC (enrolment, SMR, ongoing customer due diligence). Track 2025 AML/CTF reform changes. 
+austrac.gov.au
++1
+
+App Store submission: include licensing documentation and geo/age gating details referencing Guideline 5.3. 
+Apple Developer
+
+Note: This spec flags requirements but is not legal advice. Engage AU wagering counsel to finalize the licensing plan prior to TestFlight/public release.
+
+11) UX Flows (happy paths)
+
+Deposit (Apple Pay)
+Home → “Add funds” → Enter amount → Apple Pay sheet → Face ID → Success screen (new balance + link to markets). If PaymentIntent fails, show retry/reason.
+
+Trade (Buy YES)
+Market detail → Set AUD spend or shares → Show estimated price & slippage (quote signed by server, TTL 10s) → Confirm → Result (position updated).
+
+Withdraw
+Wallet → Withdraw → Link bank (name, BSB, account) → Amount → Review → 2FA confirm → Status “In review” then “Paid”.
+
+12) Non-Functional Requirements
+
+Reliability: API SLO p95 latency ≤ 300 ms; Availability ≥ 99.9% (MVP), RTO ≤ 4h, RPO ≤ 15m.
+
+Performance: Market list ≤ 1.5s cold start over 4G; LMSR quote ≤ 100 ms server-side.
+
+Scalability: 10k DAU, 50 trades/sec burst.
+
+Privacy: GDPR-style controls (export/delete on request) even if not mandated; AU data residency (ap-southeast-2).
+
+Accessibility: WCAG 2.1 AA patterns.
+
+13) Acceptance Criteria (MVP “Done”)
+
+Users in Australia, age-verified, can deposit via Apple Pay and complete at least one trade; ledger balances reconcile 1:1 to payment provider balances daily. 
+Stripe Docs
+
+Admin can create/resolve markets; payout executes automatically and posts correct ledger entries.
+
+MASVS checklist passes; Stripe PCI scope documented; App Store 5.3 readiness docs attached. 
+OWASP Mobile Application Security
+Apple Developer
+
+KYC/AML workflows operational; AUSTRAC enrolment completed for the environment we’re launching into. 
+austrac.gov.au
+
+14) Testing Strategy
+
+Unit: LMSR math (prices monotonic; cost differences accurate), ledger invariants (sum=0 per tx), payment webhooks (idempotency).
+
+Integration: End-to-end deposit→trade→resolve→withdraw on sandbox (Stripe test).
+
+Security: MASVS-aligned checklist; mobile static/dynamic analysis; OWASP ZAP on API; permission tests. 
+OWASP Mobile Application Security
+
+Store Readiness: Age/geo gates, responsible gambling copy, support URLs, licensing proof.
+
+15) Build & Release
+
+Environments: dev, staging, prod (separate Stripe accounts).
+
+Feature flags: markets on/off, deposit caps, max trade size, new market types.
+
+Secrets: EAS secrets and AWS Parameter Store only.
+
+Versioning: SemVer; mobile OTA updates via EAS Update (server-compatible only).
+
+Rollout: Closed TestFlight (≥50 users), staged prod rollout, crash-free ≥ 99.5% before scaling.
+
+16) Risk & Threat Model (initial)
+
+Payments: chargebacks, card testing → Stripe Radar rules, velocity limits, 3DS when required.
+
+Identity: synthetic IDs → KYC with selfie liveness, sanctions/PEP checks, device fingerprint + IP reputation.
+
+Market integrity: manipulation/collusion → per-market limits, monitoring unusual P&L, delayed settlement if flagged.
+
+Abuse: bonus abuse (future), botting → per-device limits, captcha on risky flows.
+
+Data: PII leakage → least-privilege, field-level encryption, access reviews.
+
+17) Open Questions (to resolve before dev freeze)
+
+Licence path (state vs NT corporate bookmaker/exchange) and exact geo availability at launch. 
+vgccc.vic.gov.au
+Senet Group
+
+Withdrawal rails (Stripe payouts vs domestic NPP/PayID provider) & settlement timing targets.
+
+Fee model (trading fee %, spread seeding) and B-parameter defaults per category.
+
+Key References
+
+Expo + Stripe RN Apple Pay integration docs. 
+Expo Documentation
+Stripe Docs
+
+OWASP MASVS (security baseline). 
+OWASP Mobile Application Security
+GitHub
+
+LMSR market maker fundamentals. 
+cultivatelabs.com
+blog.oddhead.com
+
+PCI/Stripe security guidance; SAQ-A criteria. 
+Stripe Docs
++1
+PCI Security Standards Council
+
+AU AML/CTF reforms & AUSTRAC obligations (bookmakers). 
+austrac.gov.au
++2
+austrac.gov.au
++2
+
+Apple App Review Guidelines (real-money gaming). 
+Apple Developer

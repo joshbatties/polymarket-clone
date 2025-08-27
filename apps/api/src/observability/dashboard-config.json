@@ -1,0 +1,499 @@
+{
+  "dashboards": [
+    {
+      "name": "Aussie Markets - Business Overview",
+      "description": "High-level business metrics and KPIs",
+      "panels": [
+        {
+          "title": "Total Deposits (24h)",
+          "type": "stat",
+          "targets": [
+            {
+              "expr": "increase(deposits_total[24h])",
+              "legendFormat": "Deposits"
+            }
+          ],
+          "thresholds": [
+            { "value": 0, "color": "red" },
+            { "value": 10, "color": "yellow" },
+            { "value": 50, "color": "green" }
+          ]
+        },
+        {
+          "title": "Deposit Value (24h)",
+          "type": "stat",
+          "targets": [
+            {
+              "expr": "increase(deposits_value_cents[24h]) / 100",
+              "legendFormat": "AUD"
+            }
+          ],
+          "unit": "currency"
+        },
+        {
+          "title": "Active Users (24h)",
+          "type": "stat",
+          "targets": [
+            {
+              "expr": "count(increase(auth_attempts_total{auth_success=\"true\"}[24h]))",
+              "legendFormat": "Users"
+            }
+          ]
+        },
+        {
+          "title": "Total Trades (24h)",
+          "type": "stat",
+          "targets": [
+            {
+              "expr": "increase(trades_total[24h])",
+              "legendFormat": "Trades"
+            }
+          ]
+        },
+        {
+          "title": "Deposit Trend",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "rate(deposits_total[5m]) * 300",
+              "legendFormat": "Deposits/5min"
+            }
+          ],
+          "timeRange": "24h"
+        },
+        {
+          "title": "Trade Volume by Outcome",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "rate(trades_total{trade_outcome=\"YES\"}[5m]) * 300",
+              "legendFormat": "YES trades/5min"
+            },
+            {
+              "expr": "rate(trades_total{trade_outcome=\"NO\"}[5m]) * 300",
+              "legendFormat": "NO trades/5min"
+            }
+          ],
+          "timeRange": "24h"
+        },
+        {
+          "title": "Trade Cost Distribution",
+          "type": "histogram",
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.50, rate(trade_cost_cents_bucket[5m]))",
+              "legendFormat": "p50"
+            },
+            {
+              "expr": "histogram_quantile(0.95, rate(trade_cost_cents_bucket[5m]))",
+              "legendFormat": "p95"
+            },
+            {
+              "expr": "histogram_quantile(0.99, rate(trade_cost_cents_bucket[5m]))",
+              "legendFormat": "p99"
+            }
+          ]
+        },
+        {
+          "title": "Ledger Balance Drift",
+          "type": "stat",
+          "targets": [
+            {
+              "expr": "abs(ledger_drift_cents)",
+              "legendFormat": "Drift (cents)"
+            }
+          ],
+          "thresholds": [
+            { "value": 0, "color": "green" },
+            { "value": 1, "color": "yellow" },
+            { "value": 100, "color": "red" }
+          ],
+          "unit": "cents"
+        }
+      ]
+    },
+    {
+      "name": "Aussie Markets - Technical Performance",
+      "description": "API performance, error rates, and technical metrics",
+      "panels": [
+        {
+          "title": "Request Rate",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "rate(http_requests_total[5m]) * 60",
+              "legendFormat": "Requests/min"
+            }
+          ],
+          "timeRange": "1h"
+        },
+        {
+          "title": "Response Time (P95)",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, rate(http_request_duration_ms_bucket[5m]))",
+              "legendFormat": "P95 Response Time"
+            }
+          ],
+          "thresholds": [
+            { "value": 300, "color": "red" }
+          ],
+          "unit": "ms"
+        },
+        {
+          "title": "Error Rate",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{http_status_code=~\"4..|5..\"}[5m]) / rate(http_requests_total[5m]) * 100",
+              "legendFormat": "Error Rate %"
+            }
+          ],
+          "thresholds": [
+            { "value": 1, "color": "yellow" },
+            { "value": 5, "color": "red" }
+          ],
+          "unit": "percent"
+        },
+        {
+          "title": "Database Query Performance",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.50, rate(database_query_duration_ms_bucket[5m]))",
+              "legendFormat": "p50"
+            },
+            {
+              "expr": "histogram_quantile(0.95, rate(database_query_duration_ms_bucket[5m]))",
+              "legendFormat": "p95"
+            }
+          ],
+          "unit": "ms"
+        },
+        {
+          "title": "Authentication Success Rate",
+          "type": "stat",
+          "targets": [
+            {
+              "expr": "rate(auth_attempts_total{auth_success=\"true\"}[5m]) / rate(auth_attempts_total[5m]) * 100",
+              "legendFormat": "Success Rate"
+            }
+          ],
+          "thresholds": [
+            { "value": 50, "color": "red" },
+            { "value": 80, "color": "yellow" },
+            { "value": 95, "color": "green" }
+          ],
+          "unit": "percent"
+        },
+        {
+          "title": "Webhook Failure Rate",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "rate(webhook_failures_total[5m]) * 60",
+              "legendFormat": "Failures/min"
+            }
+          ],
+          "thresholds": [
+            { "value": 1, "color": "yellow" },
+            { "value": 5, "color": "red" }
+          ]
+        },
+        {
+          "title": "Memory Usage",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "process_resident_memory_bytes / 1024 / 1024",
+              "legendFormat": "Memory (MB)"
+            }
+          ],
+          "unit": "MB"
+        },
+        {
+          "title": "CPU Usage",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "rate(process_cpu_seconds_total[5m]) * 100",
+              "legendFormat": "CPU %"
+            }
+          ],
+          "unit": "percent"
+        }
+      ]
+    },
+    {
+      "name": "Aussie Markets - Security & Compliance",
+      "description": "Security events, compliance metrics, and fraud detection",
+      "panels": [
+        {
+          "title": "Failed Authentication Attempts",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "rate(auth_failures_total[5m]) * 60",
+              "legendFormat": "Failed Attempts/min"
+            }
+          ],
+          "thresholds": [
+            { "value": 10, "color": "yellow" },
+            { "value": 50, "color": "red" }
+          ]
+        },
+        {
+          "title": "Rate Limiting Events",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "rate(http_requests_total{http_status_code=\"429\"}[5m]) * 60",
+              "legendFormat": "Rate Limited/min"
+            }
+          ]
+        },
+        {
+          "title": "KYC Verification Rate",
+          "type": "stat",
+          "targets": [
+            {
+              "expr": "kyc_verifications_approved / kyc_verifications_total * 100",
+              "legendFormat": "Approval Rate"
+            }
+          ],
+          "unit": "percent"
+        },
+        {
+          "title": "Pending Withdrawals",
+          "type": "stat",
+          "targets": [
+            {
+              "expr": "pending_withdrawals_count",
+              "legendFormat": "Pending"
+            }
+          ],
+          "thresholds": [
+            { "value": 10, "color": "yellow" },
+            { "value": 50, "color": "red" }
+          ]
+        },
+        {
+          "title": "AML Events",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "rate(aml_events_total[5m]) * 60",
+              "legendFormat": "AML Events/min"
+            }
+          ]
+        },
+        {
+          "title": "Suspicious Activity Score",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "avg(user_risk_score)",
+              "legendFormat": "Avg Risk Score"
+            }
+          ],
+          "thresholds": [
+            { "value": 50, "color": "yellow" },
+            { "value": 80, "color": "red" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Aussie Markets - Infrastructure",
+      "description": "Infrastructure health, database, and external services",
+      "panels": [
+        {
+          "title": "Database Connections",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "pg_stat_activity_count",
+              "legendFormat": "Active Connections"
+            }
+          ]
+        },
+        {
+          "title": "Redis Hit Rate",
+          "type": "stat",
+          "targets": [
+            {
+              "expr": "rate(redis_keyspace_hits_total[5m]) / (rate(redis_keyspace_hits_total[5m]) + rate(redis_keyspace_misses_total[5m])) * 100",
+              "legendFormat": "Hit Rate"
+            }
+          ],
+          "unit": "percent"
+        },
+        {
+          "title": "Stripe API Response Time",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, rate(http_client_request_duration_seconds_bucket{host=\"api.stripe.com\"}[5m])) * 1000",
+              "legendFormat": "P95 Response Time"
+            }
+          ],
+          "unit": "ms"
+        },
+        {
+          "title": "Disk Usage",
+          "type": "stat",
+          "targets": [
+            {
+              "expr": "(1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100",
+              "legendFormat": "Disk Usage"
+            }
+          ],
+          "thresholds": [
+            { "value": 70, "color": "yellow" },
+            { "value": 85, "color": "red" }
+          ],
+          "unit": "percent"
+        },
+        {
+          "title": "Network I/O",
+          "type": "timeseries",
+          "targets": [
+            {
+              "expr": "rate(node_network_receive_bytes_total[5m]) * 8",
+              "legendFormat": "Inbound (bps)"
+            },
+            {
+              "expr": "rate(node_network_transmit_bytes_total[5m]) * 8",
+              "legendFormat": "Outbound (bps)"
+            }
+          ],
+          "unit": "bps"
+        }
+      ]
+    }
+  ],
+  "alertRules": [
+    {
+      "name": "HighErrorRate",
+      "expr": "rate(http_requests_total{http_status_code=~\"5..\"}[5m]) > 0.1",
+      "for": "2m",
+      "severity": "critical",
+      "summary": "High error rate detected",
+      "description": "Error rate is above 10% for more than 2 minutes"
+    },
+    {
+      "name": "SlowResponseTime",
+      "expr": "histogram_quantile(0.95, rate(http_request_duration_ms_bucket[5m])) > 300",
+      "for": "5m",
+      "severity": "warning",
+      "summary": "Slow API response times",
+      "description": "95th percentile response time is above 300ms"
+    },
+    {
+      "name": "WebhookFailures",
+      "expr": "rate(webhook_failures_total[5m]) > 0.05",
+      "for": "1m",
+      "severity": "critical",
+      "summary": "Webhook failures detected",
+      "description": "Webhook failure rate is above threshold"
+    },
+    {
+      "name": "LedgerDrift",
+      "expr": "abs(ledger_drift_cents) > 100",
+      "for": "1m",
+      "severity": "critical",
+      "summary": "Ledger balance drift detected",
+      "description": "Ledger drift exceeds $1.00"
+    },
+    {
+      "name": "AuthenticationFailures",
+      "expr": "rate(auth_failures_total[5m]) > 1",
+      "for": "2m",
+      "severity": "warning",
+      "summary": "High authentication failure rate",
+      "description": "Authentication failures exceed 1 per minute"
+    },
+    {
+      "name": "DatabaseSlowQueries",
+      "expr": "histogram_quantile(0.95, rate(database_query_duration_ms_bucket[5m])) > 1000",
+      "for": "3m",
+      "severity": "warning",
+      "summary": "Slow database queries",
+      "description": "95th percentile database query time exceeds 1 second"
+    },
+    {
+      "name": "HighMemoryUsage",
+      "expr": "process_resident_memory_bytes / 1024 / 1024 > 1024",
+      "for": "10m",
+      "severity": "warning",
+      "summary": "High memory usage",
+      "description": "Application memory usage exceeds 1GB"
+    },
+    {
+      "name": "PendingWithdrawals",
+      "expr": "pending_withdrawals_count > 50",
+      "for": "5m",
+      "severity": "warning",
+      "summary": "High number of pending withdrawals",
+      "description": "More than 50 withdrawals are pending review"
+    }
+  ],
+  "notificationChannels": [
+    {
+      "name": "pagerduty-critical",
+      "type": "pagerduty",
+      "settings": {
+        "integrationKey": "${PAGERDUTY_INTEGRATION_KEY}",
+        "severity": "critical"
+      }
+    },
+    {
+      "name": "slack-alerts",
+      "type": "slack",
+      "settings": {
+        "url": "${SLACK_WEBHOOK_URL}",
+        "channel": "#aussie-markets-alerts",
+        "username": "MonitoringBot"
+      }
+    },
+    {
+      "name": "email-team",
+      "type": "email",
+      "settings": {
+        "addresses": ["team@aussiemarkets.com.au"],
+        "subject": "Aussie Markets Alert: {{.GroupLabels.alertname}}"
+      }
+    }
+  ],
+  "healthChecks": [
+    {
+      "name": "api-health",
+      "endpoint": "/health",
+      "interval": "30s",
+      "timeout": "10s",
+      "expectedStatus": 200
+    },
+    {
+      "name": "database-health",
+      "endpoint": "/health/database",
+      "interval": "60s",
+      "timeout": "15s",
+      "expectedStatus": 200
+    },
+    {
+      "name": "redis-health",
+      "endpoint": "/health/redis",
+      "interval": "60s",
+      "timeout": "10s",
+      "expectedStatus": 200
+    },
+    {
+      "name": "stripe-connectivity",
+      "endpoint": "/health/external/stripe",
+      "interval": "300s",
+      "timeout": "30s",
+      "expectedStatus": 200
+    }
+  ]
+}
